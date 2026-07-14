@@ -1,6 +1,7 @@
-import React from 'react';
 import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { EXAM_PALETTE_COLORS } from '../constants/examColors';
+
+const PALETTE_COLUMNS = 5;
 
 const QuestionPalette = ({ questions, currentQuestionIndex, answers, reviewQuestions, visitedQuestions, onSelectQuestion }) => {
   const getButtonStyles = (question, index) => {
@@ -13,7 +14,7 @@ const QuestionPalette = ({ questions, currentQuestionIndex, answers, reviewQuest
       return {
         bgcolor: '#fff',
         color: EXAM_PALETTE_COLORS.current,
-        borderColor: EXAM_PALETTE_COLORS.current,
+        border: `2px solid ${EXAM_PALETTE_COLORS.current}`,
       };
     }
 
@@ -21,7 +22,7 @@ const QuestionPalette = ({ questions, currentQuestionIndex, answers, reviewQuest
       return {
         bgcolor: EXAM_PALETTE_COLORS.review,
         color: '#fff',
-        borderColor: EXAM_PALETTE_COLORS.review,
+        border: `1px solid ${EXAM_PALETTE_COLORS.review}`,
       };
     }
 
@@ -29,7 +30,7 @@ const QuestionPalette = ({ questions, currentQuestionIndex, answers, reviewQuest
       return {
         bgcolor: EXAM_PALETTE_COLORS.answered,
         color: '#fff',
-        borderColor: EXAM_PALETTE_COLORS.answered,
+        border: `1px solid ${EXAM_PALETTE_COLORS.answered}`,
       };
     }
 
@@ -37,58 +38,115 @@ const QuestionPalette = ({ questions, currentQuestionIndex, answers, reviewQuest
       return {
         bgcolor: EXAM_PALETTE_COLORS.notAnswered,
         color: '#fff',
-        borderColor: EXAM_PALETTE_COLORS.notAnswered,
+        border: `1px solid ${EXAM_PALETTE_COLORS.notAnswered}`,
       };
     }
 
     return {
       bgcolor: EXAM_PALETTE_COLORS.notVisited,
-      color: '#000',
-      borderColor: '#ccc',
+      color: '#1a1a1a',
+      border: '1px solid #bdbdbd',
     };
   };
 
   return (
-    <Card elevation={2} sx={{ mb: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          Question Palette
+    <Card
+      elevation={2}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        minHeight: 0,
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <CardContent
+        sx={{
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          minHeight: 0,
+          overflow: 'hidden',
+          '&:last-child': { pb: 2 },
+        }}
+      >
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 1, flexShrink: 0 }}>
+          Question Palette ({questions.length})
         </Typography>
+
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(10, minmax(0, 1fr))',
-            gap: 1,
             flex: 1,
-            overflowY: 'auto',
-            pt: 1,
+            minHeight: 0,
+            border: '1px solid #d0d7de',
+            borderRadius: 1,
+            bgcolor: '#fafbfc',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {questions.map((question, index) => {
-            const questionNumber = index + 1;
-            const styles = getButtonStyles(question, index);
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              p: 1.5,
+              '&::-webkit-scrollbar': {
+                width: 10,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                bgcolor: '#9aa5b1',
+                borderRadius: 5,
+              },
+              '&::-webkit-scrollbar-track': {
+                bgcolor: '#eef1f4',
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${PALETTE_COLUMNS}, minmax(0, 1fr))`,
+                gap: 1.25,
+                alignContent: 'start',
+              }}
+            >
+              {questions.map((question, index) => {
+                const questionNumber = index + 1;
+                const styles = getButtonStyles(question, index);
 
-            return (
-              <Button
-                key={question.id}
-                size="small"
-                onClick={() => onSelectQuestion(index, question.id)}
-                sx={{
-                  minWidth: 0,
-                  height: 36,
-                  borderRadius: 1,
-                  fontSize: 12,
-                  p: 0,
-                  ...styles,
-                  '&:hover': {
-                    opacity: 0.9,
-                  },
-                }}
-              >
-                {questionNumber}
-              </Button>
-            );
-          })}
+                return (
+                  <Button
+                    key={question.id}
+                    variant="outlined"
+                    onClick={() => onSelectQuestion(index, question.id)}
+                    sx={{
+                      minWidth: 0,
+                      width: '100%',
+                      aspectRatio: '1 / 1',
+                      borderRadius: 1.5,
+                      fontSize: 16,
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      p: 0,
+                      boxShadow: 'none',
+                      ...styles,
+                      '&:hover': {
+                        opacity: 0.92,
+                        boxShadow: 'none',
+                      },
+                    }}
+                  >
+                    {questionNumber}
+                  </Button>
+                );
+              })}
+            </Box>
+          </Box>
         </Box>
       </CardContent>
     </Card>

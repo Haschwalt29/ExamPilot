@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 import ExamHeader from '../components/ExamHeader';
 import QuestionPanel from '../components/QuestionPanel';
@@ -9,6 +10,7 @@ import useExamStore from '../store/examStore';
 import useSessionStore from '../store/sessionStore';
 
 const Exam = () => {
+  const navigate = useNavigate();
   const { candidateName, selectedExam, selectedLanguage } = useSessionStore();
   const {
     currentQuestionIndex,
@@ -16,6 +18,8 @@ const Exam = () => {
     answers,
     reviewQuestions,
     visitedQuestions,
+    status,
+    startTimer,
     setCurrentQuestion,
     answerQuestion,
     goToNextQuestion,
@@ -23,6 +27,16 @@ const Exam = () => {
     clearResponse,
     markForReviewAndNext,
   } = useExamStore();
+
+  useEffect(() => {
+    startTimer();
+  }, [startTimer]);
+
+  useEffect(() => {
+    if (status === 'submitted') {
+      navigate('/result');
+    }
+  }, [status, navigate]);
 
   const questionCount = questions.length;
   const currentQuestion = questions[currentQuestionIndex] || {
@@ -65,7 +79,6 @@ const Exam = () => {
         candidateName={candidateName}
         examName={selectedExam}
         selectedLanguage={selectedLanguage}
-        timerLabel="02:30:00"
       />
 
       <Box
@@ -100,7 +113,7 @@ const Exam = () => {
           />
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' }}>
           <QuestionPalette
             questions={questions}
             currentQuestionIndex={currentQuestionIndex}
@@ -109,7 +122,7 @@ const Exam = () => {
             visitedQuestions={visitedQuestions}
             onSelectQuestion={handleSelectQuestion}
           />
-          <Box sx={{ mt: 1, flexShrink: 0 }}>
+          <Box sx={{ mt: 1.5, flexShrink: 0 }}>
             <Legend />
           </Box>
         </Box>

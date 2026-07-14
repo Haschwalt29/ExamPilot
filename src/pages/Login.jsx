@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import useSessionStore from '../store/sessionStore';
+import { QUESTION_COUNT } from '../data/questions';
 
 const examOptions = ['CTET Paper I', 'CTET Paper II'];
 const languageOptions = ['English', 'Hindi'];
@@ -105,7 +106,7 @@ const Login = () => {
                 Duration: 150 Minutes
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Questions: 150
+                Questions: {QUESTION_COUNT}
               </Typography>
             </Box>
 

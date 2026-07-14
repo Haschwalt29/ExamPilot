@@ -1,8 +1,18 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { HEADER_BG, HEADER_TEXT, HEADER_TIMER_BG } from '../constants/examColors';
+import {
+  HEADER_BG,
+  HEADER_TEXT,
+  formatRemainingTime,
+  getTimerColor,
+} from '../constants/examColors';
+import useExamStore from '../store/examStore';
 
-const ExamHeader = ({ candidateName, examName, selectedLanguage, timerLabel }) => {
+const ExamHeader = ({ candidateName, examName, selectedLanguage }) => {
+  const remainingTime = useExamStore((state) => state.remainingTime);
+  const timerColor = getTimerColor(remainingTime);
+  const timerLabel = formatRemainingTime(remainingTime);
+
   return (
     <Box
       sx={{
@@ -54,11 +64,21 @@ const ExamHeader = ({ candidateName, examName, selectedLanguage, timerLabel }) =
             {selectedLanguage}
           </Typography>
         </Box>
-        <Box sx={{ px: 2, py: 1, bgcolor: HEADER_TIMER_BG, borderRadius: 1, minWidth: 132, textAlign: 'center' }}>
-          <Typography variant="caption" sx={{ color: HEADER_TEXT, opacity: 0.8, letterSpacing: 0.5 }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1,
+            bgcolor: `${timerColor}14`,
+            borderRadius: 1,
+            minWidth: 132,
+            textAlign: 'center',
+            border: `1px solid ${timerColor}`,
+          }}
+        >
+          <Typography variant="caption" sx={{ color: timerColor, opacity: 0.9, letterSpacing: 0.5 }}>
             Time Left
           </Typography>
-          <Typography variant="subtitle1" sx={{ color: HEADER_TEXT, fontWeight: 700 }}>
+          <Typography variant="subtitle1" sx={{ color: timerColor, fontWeight: 700 }}>
             {timerLabel}
           </Typography>
         </Box>

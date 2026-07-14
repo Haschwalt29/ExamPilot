@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import useSessionStore from '../store/sessionStore';
 import useExamStore from '../store/examStore';
-import { getQuestionsByExam } from '../data/questions';
+import { getQuestionsByExam, QUESTION_COUNT } from '../data/questions';
 
 const instructions = [
   'Read every question carefully before selecting an answer.',
@@ -49,7 +49,7 @@ const Instructions = () => {
     const examConfig = {
       examId: 'exam-001',
       startedAt: new Date().toISOString(),
-      duration: 150 * 60,
+      duration: 150,
     };
 
     initializeExam(examConfig, questions);
@@ -81,7 +81,7 @@ const Instructions = () => {
                   <Typography variant="body1"><strong>Exam Name:</strong> {selectedExam}</Typography>
                   <Typography variant="body1"><strong>Language:</strong> {selectedLanguage}</Typography>
                   <Typography variant="body1"><strong>Duration:</strong> 150 Minutes</Typography>
-                  <Typography variant="body1"><strong>Total Questions:</strong> 150</Typography>
+                  <Typography variant="body1"><strong>Total Questions:</strong> {QUESTION_COUNT}</Typography>
                   <Typography variant="body1"><strong>Negative Marking:</strong> No</Typography>
                 </Stack>
               </CardContent>

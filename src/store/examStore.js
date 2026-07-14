@@ -1,10 +1,22 @@
 import { create } from 'zustand';
 
-const useExamStore = create((set) => ({
+let timerIntervalId = null;
+
+const clearTimerInterval = () => {
+  if (timerIntervalId !== null) {
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+  }
+};
+
+const useExamStore = create((set, get) => ({
   examId: '',
   startedAt: null,
   duration: 0,
   remainingTime: 0,
+  isRunning: false,
+  startTime: null,
+  endTime: null,
   currentQuestionIndex: 0,
   questions: [],
   answers: {},
@@ -12,19 +24,96 @@ const useExamStore = create((set) => ({
   visitedQuestions: [],
   status: 'idle',
 
-  initializeExam: (examConfig, questions) =>
+  initializeExam: (examConfig, questions) => {
+    clearTimerInterval();
+    const durationMinutes = examConfig.duration || 0;
+
     set({
       examId: examConfig.examId || '',
       startedAt: examConfig.startedAt || new Date().toISOString(),
-      duration: examConfig.duration || 0,
-      remainingTime: examConfig.duration || 0,
+      duration: durationMinutes,
+      remainingTime: durationMinutes * 60,
+      isRunning: false,
+      startTime: null,
+      endTime: null,
       currentQuestionIndex: 0,
       questions: questions || [],
       answers: {},
       reviewQuestions: [],
       visitedQuestions: [],
       status: 'inProgress',
-    }),
+    });
+  },
+
+  startTimer: () => {
+    const { isRunning, status } = get();
+    if (isRunning || timerIntervalId !== null || status !== 'inProgress') {
+      return;
+    }
+
+    set({
+      isRunning: true,
+      startTime: Date.now(),
+    });
+
+    timerIntervalId = setInterval(() => {
+      get().tick();
+    }, 1000);
+  },
+
+  pauseTimer: () => {
+    const { isRunning } = get();
+    if (!isRunning || timerIntervalId === null) {
+      return;
+    }
+
+    clearTimerInterval();
+    set({ isRunning: false });
+  },
+
+  resumeTimer: () => {
+    const { isRunning, status, remainingTime } = get();
+    if (isRunning || timerIntervalId !== null || status !== 'inProgress' || remainingTime <= 0) {
+      return;
+    }
+
+    set({ isRunning: true });
+
+    timerIntervalId = setInterval(() => {
+      get().tick();
+    }, 1000);
+  },
+
+  tick: () => {
+    const { remainingTime, status } = get();
+    if (status !== 'inProgress') {
+      return;
+    }
+
+    if (remainingTime <= 1) {
+      set({ remainingTime: 0 });
+      get().autoSubmit();
+      return;
+    }
+
+    set({ remainingTime: remainingTime - 1 });
+  },
+
+  stopTimer: () => {
+    clearTimerInterval();
+    set({
+      isRunning: false,
+      endTime: Date.now(),
+    });
+  },
+
+  autoSubmit: () => {
+    get().stopTimer();
+    set({
+      status: 'submitted',
+      remainingTime: 0,
+    });
+  },
 
   setCurrentQuestion: (index, questionId = null) =>
     set((state) => ({
@@ -100,29 +189,32 @@ const useExamStore = create((set) => ({
       currentQuestionIndex: Math.min(state.currentQuestionIndex + 1, state.questions.length - 1),
     })),
 
-  updateRemainingTime: (seconds) =>
-    set((state) => ({
-      remainingTime: Math.max(0, state.remainingTime + seconds),
-    })),
-
-  submitExam: () =>
+  submitExam: () => {
+    get().stopTimer();
     set({
       status: 'submitted',
-    }),
+      endTime: Date.now(),
+    });
+  },
 
-  resetExam: () =>
+  resetExam: () => {
+    clearTimerInterval();
     set({
       examId: '',
       startedAt: null,
       duration: 0,
       remainingTime: 0,
+      isRunning: false,
+      startTime: null,
+      endTime: null,
       currentQuestionIndex: 0,
       questions: [],
       answers: {},
       reviewQuestions: [],
       visitedQuestions: [],
       status: 'idle',
-    }),
+    });
+  },
 }));
 
 export default useExamStore;
