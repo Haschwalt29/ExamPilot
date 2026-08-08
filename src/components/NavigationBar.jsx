@@ -1,7 +1,6 @@
-import React from 'react';
 import { Box, Button, Stack } from '@mui/material';
 
-const NavigationBar = ({ onPrevious, onSaveNext, onClearResponse, onMarkReviewNext }) => {
+const NavigationBar = ({ onPrevious, onSaveNext, onClearResponse, onMarkReviewNext, onSubmit }) => {
   return (
     <Box sx={{ mt: 2, py: 2, borderTop: '1px solid #e0e0e0', bgcolor: '#fafbfc' }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -18,6 +17,17 @@ const NavigationBar = ({ onPrevious, onSaveNext, onClearResponse, onMarkReviewNe
           Mark For Review & Next
         </Button>
       </Stack>
+
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ minHeight: 48, minWidth: 180, fontWeight: 700 }}
+          onClick={onSubmit}
+        >
+          Submit Exam
+        </Button>
+      </Box>
     </Box>
   );
 };

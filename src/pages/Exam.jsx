@@ -1,6 +1,14 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
 import ExamHeader from '../components/ExamHeader';
 import QuestionPanel from '../components/QuestionPanel';
 import QuestionPalette from '../components/QuestionPalette';
@@ -11,7 +19,8 @@ import useSessionStore from '../store/sessionStore';
 
 const Exam = () => {
   const navigate = useNavigate();
-  const { candidateName, selectedExam, selectedLanguage } = useSessionStore();
+  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const { candidateName, selectedExam, selectedLanguage, examStarted } = useSessionStore();
   const {
     currentQuestionIndex,
     questions,
@@ -20,6 +29,7 @@ const Exam = () => {
     visitedQuestions,
     status,
     startTimer,
+    submitExam,
     setCurrentQuestion,
     answerQuestion,
     goToNextQuestion,
@@ -29,8 +39,13 @@ const Exam = () => {
   } = useExamStore();
 
   useEffect(() => {
+    if (!examStarted || questions.length === 0) {
+      navigate('/');
+      return;
+    }
+
     startTimer();
-  }, [startTimer]);
+  }, [examStarted, questions.length, startTimer, navigate]);
 
   useEffect(() => {
     if (status === 'submitted') {
@@ -48,6 +63,9 @@ const Exam = () => {
     correctAnswer: '',
     explanation: '',
   };
+
+  const answeredCount = Object.keys(answers).length;
+  const unansweredCount = questionCount - answeredCount;
 
   const handleSelectQuestion = (index, questionId) => {
     setCurrentQuestion(index, questionId);
@@ -71,6 +89,15 @@ const Exam = () => {
 
   const handleMarkReviewNext = () => {
     markForReviewAndNext(currentQuestion.id);
+  };
+
+  const handleSubmitClick = () => {
+    setSubmitDialogOpen(true);
+  };
+
+  const handleConfirmSubmit = () => {
+    setSubmitDialogOpen(false);
+    submitExam();
   };
 
   return (
@@ -110,6 +137,7 @@ const Exam = () => {
             onSaveNext={handleSaveNext}
             onClearResponse={handleClearResponse}
             onMarkReviewNext={handleMarkReviewNext}
+            onSubmit={handleSubmitClick}
           />
         </Box>
 
@@ -127,6 +155,23 @@ const Exam = () => {
           </Box>
         </Box>
       </Box>
+
+      <Dialog open={submitDialogOpen} onClose={() => setSubmitDialogOpen(false)}>
+        <DialogTitle>Submit Examination?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have answered {answeredCount} of {questionCount} questions.
+            {unansweredCount > 0 ? ` ${unansweredCount} question(s) remain unanswered.` : ''}
+            {' '}Once submitted, you cannot change your answers. Do you want to proceed?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSubmitDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" color="success" onClick={handleConfirmSubmit}>
+            Submit Exam
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import evaluateExam from '../utils/evaluateExam';
 
 let timerIntervalId = null;
 
@@ -23,6 +24,8 @@ const useExamStore = create((set, get) => ({
   reviewQuestions: [],
   visitedQuestions: [],
   status: 'idle',
+  submissionType: null,
+  results: null,
 
   initializeExam: (examConfig, questions) => {
     clearTimerInterval();
@@ -42,6 +45,8 @@ const useExamStore = create((set, get) => ({
       reviewQuestions: [],
       visitedQuestions: [],
       status: 'inProgress',
+      submissionType: null,
+      results: null,
     });
   },
 
@@ -108,10 +113,17 @@ const useExamStore = create((set, get) => ({
   },
 
   autoSubmit: () => {
+    const { questions, answers, status } = get();
+    if (status === 'submitted') {
+      return;
+    }
+
     get().stopTimer();
     set({
       status: 'submitted',
       remainingTime: 0,
+      submissionType: 'auto',
+      results: evaluateExam(questions, answers),
     });
   },
 
@@ -190,10 +202,17 @@ const useExamStore = create((set, get) => ({
     })),
 
   submitExam: () => {
+    const { questions, answers, status } = get();
+    if (status === 'submitted') {
+      return;
+    }
+
     get().stopTimer();
     set({
       status: 'submitted',
       endTime: Date.now(),
+      submissionType: 'manual',
+      results: evaluateExam(questions, answers),
     });
   },
 
@@ -213,6 +232,8 @@ const useExamStore = create((set, get) => ({
       reviewQuestions: [],
       visitedQuestions: [],
       status: 'idle',
+      submissionType: null,
+      results: null,
     });
   },
 }));
