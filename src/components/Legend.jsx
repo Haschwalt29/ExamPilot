@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { EXAM_PALETTE_COLORS } from '../constants/examColors';
 

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const MainLayout = ({ children }) => {
   return (
     <div style={{ minHeight: '100vh', fontFamily: 'sans-serif' }}>

@@ -168,6 +168,9 @@ const useExamStore = create((set, get) => ({
   goToNextQuestion: (questionId) =>
     set((state) => ({
       currentQuestionIndex: Math.min(state.currentQuestionIndex + 1, state.questions.length - 1),
+      reviewQuestions: questionId
+        ? state.reviewQuestions.filter((id) => id !== questionId)
+        : state.reviewQuestions,
       visitedQuestions: state.visitedQuestions.includes(questionId)
         ? state.visitedQuestions
         : questionId
@@ -185,6 +188,9 @@ const useExamStore = create((set, get) => ({
       answers: Object.fromEntries(
         Object.entries(state.answers).filter(([id]) => id !== questionId)
       ),
+      reviewQuestions: questionId
+        ? state.reviewQuestions.filter((id) => id !== questionId)
+        : state.reviewQuestions,
       visitedQuestions: state.visitedQuestions.includes(questionId)
         ? state.visitedQuestions
         : [...state.visitedQuestions, questionId],

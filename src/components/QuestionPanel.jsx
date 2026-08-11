@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Card,
@@ -34,7 +33,7 @@ const QuestionPanel = ({ questionNumber, totalQuestions, questionText, subject, 
           <Divider />
 
           <Box>
-            <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+            <Typography variant="body1" fontWeight={600} sx={{ mb: 1, whiteSpace: 'pre-line' }}>
               {questionText}
             </Typography>
           </Box>
